@@ -122,12 +122,8 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    # keep the rest of your middleware
 ]
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
@@ -143,4 +139,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Razorpay Credentials (Sandbox Test Keys by Default)
 RAZORPAY_KEY_ID = 'rzp_test_CalicutStar2026'
 RAZORPAY_KEY_SECRET = 'CalicutStarSecretKey2026Riyadh'
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+DEBUG = False
 
