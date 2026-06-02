@@ -1,0 +1,273 @@
+{% extends 'restaurant/base.html' %}
+{% load static %}
+
+{% block title %}Moyasar Secure Payment | Calicut Star Riyadh{% endblock %}
+
+{% block extra_css %}
+<style>
+    .payment-section {
+        padding: 140px 0 100px;
+        background-color: var(--light-neutral);
+        min-height: 80vh;
+    }
+    .payment-container {
+        max-width: 550px;
+        margin: 0 auto;
+    }
+    .payment-card {
+        background-color: var(--white);
+        border-radius: var(--border-radius-md);
+        box-shadow: var(--shadow-hover);
+        border: 1.5px solid rgba(11, 93, 59, 0.1);
+        padding: 40px;
+    }
+    .payment-title {
+        color: var(--primary-green);
+        font-family: var(--font-heading);
+        font-weight: 700;
+        font-size: 1.6rem;
+        margin-bottom: 25px;
+        text-align: center;
+        border-bottom: 2px solid rgba(11, 93, 59, 0.1);
+        padding-bottom: 15px;
+    }
+    
+    /* Interactive Card Mockup */
+    .mada-card-visual {
+        background: linear-gradient(135deg, #0B5D3B 0%, #05301E 100%);
+        color: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 10px 25px rgba(11, 93, 59, 0.25);
+        margin-bottom: 30px;
+        position: relative;
+        height: 200px;
+        border: 1px solid rgba(212, 160, 23, 0.4);
+    }
+    .card-chip {
+        width: 45px;
+        height: 35px;
+        background: linear-gradient(135deg, #e5c060 0%, #d4a017 100%);
+        border-radius: 6px;
+        margin-bottom: 20px;
+    }
+    .card-number-display {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 1.45rem;
+        letter-spacing: 2px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    }
+    .card-bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+    }
+    .card-holder-name {
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        letter-spacing: 1px;
+        font-weight: 600;
+        max-width: 250px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .card-expiry-display {
+        font-size: 0.95rem;
+        font-family: 'Courier New', Courier, monospace;
+    }
+    .mada-logo-overlay {
+        position: absolute;
+        top: 25px;
+        right: 25px;
+        background-color: white;
+        border-radius: 4px;
+        padding: 4px 8px;
+        font-weight: 800;
+        color: #0B5D3B;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="payment-section">
+    <div class="container">
+        <div class="payment-container" data-fade-in>
+            <div class="payment-card">
+                <h2 class="payment-title"><i class="bi bi-shield-lock-fill me-2 text-warning"></i>Moyasar Secure Checkout</h2>
+                
+                <!-- Card Display -->
+                <div class="mada-card-visual">
+                    <div id="card-brand" class="mada-logo-overlay">
+                        <i class="bi bi-credit-card-2-back-fill text-warning"></i><span>Mada</span>
+                    </div>
+                    <div class="card-chip"></div>
+                    <div id="display-number" class="card-number-display">•••• •••• •••• ••••</div>
+                    <div class="card-bottom">
+                        <div>
+                            <small class="d-block text-white-50" style="font-size: 0.7rem; text-transform: uppercase;">Card Holder</small>
+                            <span id="display-name" class="card-holder-name">Mada Cardholder</span>
+                        </div>
+                        <div class="text-end">
+                            <small class="d-block text-white-50" style="font-size: 0.7rem; text-transform: uppercase;">Expiry</small>
+                            <span id="display-expiry" class="card-expiry-display">MM/YY</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Total Display -->
+                <div class="alert alert-secondary text-center fw-bold py-3 mb-4 fs-5" style="border-left: 5px solid var(--primary-green);">
+                    Amount to Pay: <span class="text-green" style="color: var(--primary-green);">{{ order.total_amount }} SAR</span>
+                </div>
+
+                <!-- Payment Form -->
+                <form id="mada-payment-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="order_id" value="{{ order.id }}">
+                    
+                    <div class="mb-3">
+                        <label for="card-holder" class="form-label fw-semibold">Cardholder Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="card-holder" name="card_name" required placeholder="Name as printed on card">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="card-num" class="form-label fw-semibold">Card Number <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="card-num" name="card_number" required maxlength="19" placeholder="4000 1234 5678 9010">
+                        <small class="text-muted mt-1 d-block"><i class="bi bi-info-circle-fill text-warning me-1"></i>Test with Mada card BIN: starting with <strong class="text-dark">588847</strong> or <strong class="text-dark">440533</strong></small>
+                    </div>
+                    
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label for="card-exp" class="form-label fw-semibold">Expiration Date <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="card-exp" name="expiry" required maxlength="5" placeholder="MM/YY">
+                        </div>
+                        <div class="col-6">
+                            <label for="card-cvv" class="form-label fw-semibold">CVV <span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" id="card-cvv" name="cvv" required maxlength="3" placeholder="123">
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid mt-4">
+                        <button type="submit" id="submit-payment-btn" class="btn btn-green py-3 text-uppercase fw-bold">
+                            <i class="bi bi-lock-fill me-2"></i>Pay {{ order.total_amount }} SAR
+                        </button>
+                    </div>
+                </form>
+                
+                <div id="payment-feedback" class="alert mt-3 d-none"></div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const cardNumInput = document.getElementById('card-num');
+        const cardHolderInput = document.getElementById('card-holder');
+        const cardExpInput = document.getElementById('card-exp');
+        
+        const displayNum = document.getElementById('display-number');
+        const displayName = document.getElementById('display-name');
+        const displayExpiry = document.getElementById('display-expiry');
+        const cardBrand = document.getElementById('card-brand');
+        
+        const madaForm = document.getElementById('mada-payment-form');
+        const madaFeedback = document.getElementById('payment-feedback');
+        const payBtn = document.getElementById('submit-payment-btn');
+
+        // Card number formatter & logo switcher
+        cardNumInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            let formatted = '';
+            
+            // Format 16 digits into blocks of 4
+            for (let i = 0; i < value.length; i++) {
+                if (i > 0 && i % 4 === 0) formatted += ' ';
+                formatted += value[i];
+            }
+            e.target.value = formatted;
+            
+            // Update visual card
+            displayNum.textContent = formatted || '•••• •••• •••• ••••';
+            
+            // Check Mada vs standard Visa prefix
+            if (value.startsWith('588847') || value.startsWith('589') || value.startsWith('440533')) {
+                cardBrand.innerHTML = '<i class="bi bi-credit-card-2-back-fill text-warning"></i><span>Mada</span>';
+            } else {
+                cardBrand.innerHTML = '<i class="bi bi-credit-card-fill text-primary"></i><span>Visa/MC</span>';
+            }
+        });
+
+        // Cardholder formatter
+        cardHolderInput.addEventListener('input', (e) => {
+            displayName.textContent = e.target.value.trim() || 'Mada Cardholder';
+        });
+
+        // Expiry formatter
+        cardExpInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            if (value.length > 2) {
+                value = value.substr(0, 2) + '/' + value.substr(2, 2);
+            }
+            e.target.value = value;
+            displayExpiry.textContent = value || 'MM/YY';
+        });
+
+        // Form submit handler
+        madaForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Set loading
+            payBtn.disabled = true;
+            const originalText = payBtn.innerHTML;
+            payBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing Transaction...';
+            
+            madaFeedback.className = 'alert mt-3 d-none';
+            
+            const formData = new FormData(madaForm);
+            const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+            
+            fetch("{% url 'moyasar_verify' %}", {  // Wait, the url name was set to mada_verify? Wait, let's verify urls.py.
+                // In restaurant/urls.py we have: path('checkout/verify/', views.moyasar_verify_ajax, name='moyasar_verify'),
+                // Ah, the URL name is 'moyasar_verify'! Let's use 'moyasar_verify' here.
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(res => {
+                return res.json().then(data => {
+                    if (!res.ok) throw new Error(data.message || 'Payment authorization rejected.');
+                    return data;
+                });
+            })
+            .then(data => {
+                madaFeedback.className = 'alert alert-success mt-3';
+                madaFeedback.innerHTML = `<i class="bi bi-check-circle-fill me-2"></i> ${data.message}`;
+                setTimeout(() => {
+                    window.location.href = `/order/success/${data.order_id}/`;
+                }, 1500);
+            })
+            .catch(err => {
+                madaFeedback.className = 'alert alert-danger mt-3';
+                madaFeedback.innerHTML = `<i class="bi bi-exclamation-triangle-fill me-2"></i> ${err.message}`;
+                payBtn.disabled = false;
+                payBtn.innerHTML = originalText;
+            });
+        });
+    });
+</script>
+{% endblock %}

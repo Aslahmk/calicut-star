@@ -1,0 +1,473 @@
+{% extends 'restaurant/base.html' %}
+{% load static %}
+
+{% block title %}Calicut Star | Authentic Kerala Restaurant in Riyadh{% endblock %}
+
+{% block content %}
+
+<!-- Hero Banner Section -->
+<section class="hero-section" id="home">
+    <div class="hero-carousel-container">
+        <div id="heroCarousel" class="carousel slide carousel-fade h-100" data-bs-ride="carousel" data-bs-interval="6000">
+            <div class="carousel-indicators" style="z-index: 4;">
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+            </div>
+            <div class="carousel-inner h-100">
+                <div class="carousel-item active h-100">
+                    <img src="{% static 'images/hero_biriyani.png' %}" class="d-block w-100 h-100" alt="Authentic Malabar Biriyani">
+                </div>
+                <div class="carousel-item h-100">
+                    <img src="{% static 'images/hero_porotta.png' %}" class="d-block w-100 h-100" alt="Soft Flaky Kerala Porotta with Beef Fry">
+                </div>
+                <div class="carousel-item h-100">
+                    <img src="{% static 'images/hero_fish.png' %}" class="d-block w-100 h-100" alt="Traditional Kerala Fish Curry">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="hero-overlay"></div>
+    
+    <div class="container h-100 d-flex align-items-center">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="hero-content" data-fade-in>
+                    <span class="hero-badge">Welcome to Calicut Star</span>
+                    <h1 class="hero-title">Calicut Star</h1>
+                    <p class="hero-subtitle">Serving the Soul of Malabar in the Heart of Riyadh</p>
+                    <p class="hero-description">
+                        Experience authentic Malabar cuisine crafted with traditional recipes, rich spices, and homely hospitality. Prepared by heritage chefs dedicated to the flavors of Kerala.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3">
+                        <a href="{% url 'menu' %}" class="btn btn-gold px-4 py-3">
+                            <i class="bi bi-book-half me-2"></i>View Menu
+                        </a>
+                        <a href="#combos" class="btn btn-outline-gold px-4 py-3">
+                            <i class="bi bi-cart-fill me-2"></i>Order Now
+                        </a>
+                        <a href="#contact" class="btn btn-green px-4 py-3 border-white text-white">
+                            <i class="bi bi-telephone-fill me-2"></i>Contact Us
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="hero-scroll-btn" onclick="document.getElementById('about').scrollIntoView({behavior: 'smooth'})">
+        <i class="bi bi-chevron-double-down"></i>
+    </div>
+</section>
+
+<!-- About Us Section -->
+<section class="section-padding about-section" id="about">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6" data-fade-in>
+                <div class="about-img-wrapper pe-lg-4">
+                    <div class="experience-badge">
+                        <h3>15+</h3>
+                        <p>Years of<br>Heritage</p>
+                    </div>
+                    <img src="{% static 'images/about_main.png' %}" alt="Traditional cooking at Calicut Star" class="img-fluid about-img-1 w-100">
+                    <img src="{% static 'images/about_sub.png' %}" alt="Authentic Kerala spices" class="img-fluid about-img-2">
+                </div>
+            </div>
+            
+            <div class="col-lg-6" data-fade-in>
+                <div class="section-title text-start mb-4">
+                    <span class="text-uppercase text-warning fw-bold tracking-wider d-block mb-2">Our Culinary Journey</span>
+                    <h2 class="mb-0">Taste of Kerala in Riyadh</h2>
+                </div>
+                <p class="lead text-muted mb-4">
+                    "At Calicut Star, we bring the taste of Kerala to Riyadh with carefully prepared dishes inspired by the rich culinary heritage of Malabar."
+                </p>
+                <p class="mb-4 text-secondary">
+                    Every meal is crafted with passion, tradition, and the warmth of home. We use hand-picked, authentic spices imported directly from Malabar shores to recreate the same nostalgic flavors of traditional Kerala houses. From our flaky porottas to aromatic biriyanis and simmering fish mango curries, we welcome your family to an authentic culinary celebration.
+                </p>
+                
+                <div class="about-features">
+                    <div class="about-feature-item">
+                        <div class="about-feature-icon">
+                            <i class="bi bi-egg-fried"></i>
+                        </div>
+                        <div class="about-feature-text">
+                            <h5>100% Authentic</h5>
+                            <small class="text-muted">True Malabar Recipes</small>
+                        </div>
+                    </div>
+                    <div class="about-feature-item">
+                        <div class="about-feature-icon">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                        <div class="about-feature-text">
+                            <h5>Family Friendly</h5>
+                            <small class="text-muted">Welcoming Dining Area</small>
+                        </div>
+                    </div>
+                    <div class="about-feature-item">
+                        <div class="about-feature-icon">
+                            <i class="bi bi-fire"></i>
+                        </div>
+                        <div class="about-feature-text">
+                            <h5>Heritage Chefs</h5>
+                            <small class="text-muted">Traditional Methods</small>
+                        </div>
+                    </div>
+                    <div class="about-feature-item">
+                        <div class="about-feature-icon">
+                            <i class="bi bi-heart-fill"></i>
+                        </div>
+                        <div class="about-feature-text">
+                            <h5>Homely Hospitality</h5>
+                            <small class="text-muted">With Kerala warmth</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Today's Specials Section -->
+<section class="section-padding" id="specials">
+    <div class="container">
+        <div class="section-title text-center" data-fade-in>
+            <span class="text-uppercase text-warning fw-bold d-block mb-2">Chef's Selection</span>
+            <h2>Today's Specials</h2>
+            <p>Savor these exquisite delicacies freshly prepared today. Hand-picked options managed daily by our head chef.</p>
+        </div>
+        
+        <!-- Tabs for Specials Categories -->
+        <ul class="nav nav-tabs specials-tabs" id="specialsTabs" role="tablist" data-fade-in>
+            {% for group_name in specials.keys %}
+            <li class="nav-item" role="presentation">
+                <button class="nav-link {% if forloop.first %}active{% endif %}" id="tab-{{ forloop.counter }}" data-bs-toggle="tab" data-bs-target="#content-{{ forloop.counter }}" type="button" role="tab" aria-controls="content-{{ forloop.counter }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
+                    {{ group_name }}
+                </button>
+            </li>
+            {% endfor %}
+        </ul>
+        
+        <!-- Tab Contents -->
+        <div class="tab-content mt-4" id="specialsTabsContent" data-fade-in>
+            {% for group_name, items in specials.items %}
+            <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="content-{{ forloop.counter }}" role="tabpanel" aria-labelledby="tab-{{ forloop.counter }}">
+                <div class="row g-4">
+                    {% if items %}
+                        {% for item in items %}
+                        <div class="col-lg-3 col-md-6">
+                            <div class="food-card">
+                                <div class="food-card-img-wrapper">
+                                    {% if item.image %}
+                                        <img src="{{ item.image.url }}" alt="{{ item.name }}">
+                                    {% else %}
+                                        <img src="{% static 'images/default_food.png' %}" alt="{{ item.name }}">
+                                    {% endif %}
+                                    
+                                    {% if item.is_available %}
+                                        <span class="food-card-badge badge-available">Available</span>
+                                    {% else %}
+                                        <span class="food-card-badge badge-unavailable">Sold Out</span>
+                                    {% endif %}
+                                </div>
+                                <div class="food-card-body">
+                                    <div class="food-card-title">
+                                        <span>{{ item.name }}</span>
+                                    </div>
+                                    <p class="food-card-text">{{ item.description }}</p>
+                                    <div class="food-card-footer">
+                                        <span class="food-card-price">{{ item.price }} <small style="font-size: 0.75rem; font-family: var(--font-body);">SAR</small></span>
+                                        {% if item.is_available %}
+                                        <button type="button" class="whatsapp-order-btn add-to-cart-btn" data-item-id="{{ item.id }}" data-item-name="{{ item.name }}" data-item-price="{{ item.price }}" data-item-type="special">
+                                            <i class="bi bi-cart-fill"></i> Add to Cart
+                                        </button>
+                                        {% else %}
+                                        <button class="btn btn-secondary btn-sm" disabled>Sold Out</button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="col-12 text-center py-5 text-muted">
+                            <i class="bi bi-egg-fried" style="font-size: 3rem;"></i>
+                            <p class="mt-3">No specials listed in this category today. Check back soon!</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Combo Offers Section -->
+<section class="section-padding combos-section" id="combos">
+    <div class="container">
+        <div class="section-title text-center" data-fade-in>
+            <span class="text-uppercase text-warning fw-bold d-block mb-2">Great Savings</span>
+            <h2>Food Combo Offers</h2>
+            <p>Delectable combinations curated for ultimate taste and value. Perfect for sharing with friends and family!</p>
+        </div>
+        
+        <div class="row g-4 justify-content-center" data-fade-in>
+            {% if combos %}
+                {% for combo in combos %}
+                <div class="col-lg-4 col-md-6">
+                    <div class="combo-card">
+                        <span class="combo-tag">Combo Offer</span>
+                        <div class="combo-card-body">
+                            {% if combo.image %}
+                                <img src="{{ combo.image.url }}" alt="{{ combo.title }}" class="combo-img">
+                            {% else %}
+                                <img src="{% static 'images/default_combo.png' %}" alt="{{ combo.title }}" class="combo-img">
+                            {% endif %}
+                            <h3 class="combo-title">{{ combo.title }}</h3>
+                            <p class="combo-desc">{{ combo.description }}</p>
+                            
+                            <div class="combo-pricing">
+                                {% if combo.original_price %}
+                                <span class="combo-original-price">{{ combo.original_price }} SAR</span>
+                                {% endif %}
+                                <span class="combo-special-price">{{ combo.special_price }} <small style="font-size: 1rem;">SAR</small></span>
+                            </div>
+                            
+                            {% if combo.is_available %}
+                            <button type="button" class="btn btn-gold w-100 text-center add-to-cart-btn" data-item-id="{{ combo.id }}" data-item-name="{{ combo.title }}" data-item-price="{{ combo.special_price }}" data-item-type="combo">
+                                <i class="bi bi-cart-fill me-2"></i>Add Combo to Cart
+                            </button>
+                            {% else %}
+                            <button class="btn btn-secondary w-100" disabled>Temporarily Unavailable</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 text-center py-5 text-muted">
+                    <p>No combo offers available at the moment. Please ask our staff about daily combos!</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Gallery Section -->
+<section class="section-padding" id="gallery">
+    <div class="container">
+        <div class="section-title text-center" data-fade-in>
+            <span class="text-uppercase text-warning fw-bold d-block mb-2">Visual Feast</span>
+            <h2>Our Gallery</h2>
+            <p>Explore moments captured in our kitchen, dining tables, and beautiful traditional interiors.</p>
+        </div>
+        
+        <!-- Filter buttons -->
+        <div class="gallery-filter-btns" data-fade-in>
+            <button class="gallery-filter-btn active" data-filter="all">All Photos</button>
+            <button class="gallery-filter-btn" data-filter="Interior">Interior & Ambience</button>
+            <button class="gallery-filter-btn" data-filter="Food">Food Photography</button>
+            <button class="gallery-filter-btn" data-filter="Dining">Dining Experience</button>
+            <button class="gallery-filter-btn" data-filter="Signature">Signature Dishes</button>
+        </div>
+        
+        <!-- Gallery Grid -->
+        <div class="gallery-grid" data-fade-in>
+            {% if gallery %}
+                {% for item in gallery %}
+                <div class="gallery-item-card" data-category="{{ item.category }}" data-image-src="{{ item.image.url }}" data-title="{{ item.title }}" data-caption="{{ item.caption }}">
+                    <img src="{{ item.image.url }}" alt="{{ item.title }}" loading="lazy">
+                    <div class="gallery-overlay">
+                        <i class="bi bi-zoom-in gallery-overlay-icon"></i>
+                        <h4 class="gallery-overlay-title">{{ item.title }}</h4>
+                        <span class="gallery-overlay-desc">{{ item.get_category_display }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 text-center py-5 text-muted">
+                    <p>Gallery images will be loaded shortly.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Lightbox Modal Structure -->
+<div id="lightbox-modal" class="lightbox-modal">
+    <div class="lightbox-content-wrapper">
+        <span class="lightbox-close"><i class="bi bi-x-lg"></i></span>
+        <img class="lightbox-img" src="" alt="Popup image">
+        <div class="lightbox-caption"></div>
+        <a class="lightbox-prev"><i class="bi bi-chevron-left"></i></a>
+        <a class="lightbox-next"><i class="bi bi-chevron-right"></i></a>
+    </div>
+</div>
+
+<!-- Customer Reviews Section -->
+<section class="section-padding reviews-section" id="reviews">
+    <div class="container">
+        <div class="section-title text-center" data-fade-in>
+            <span class="text-uppercase text-warning fw-bold d-block mb-2">Guest Testimonials</span>
+            <h2>What Our Customers Say</h2>
+            <p>Read opinions and experiences shared by food enthusiasts and families visiting Calicut Star.</p>
+        </div>
+        
+        <div id="reviewsCarousel" class="carousel slide" data-bs-ride="carousel" data-fade-in>
+            <div class="carousel-inner">
+                {% if reviews %}
+                    {% for review in reviews %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8">
+                                <div class="review-card">
+                                    <i class="bi bi-quote review-quote-icon"></i>
+                                    <div class="review-stars">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= review.rating %}
+                                                <i class="bi bi-star-fill text-warning"></i>
+                                            {% else %}
+                                                <i class="bi bi-star text-secondary"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <p class="review-text">"{{ review.review_text }}"</p>
+                                    <h4 class="review-author">{{ review.customer_name }}</h4>
+                                    <small class="text-warning-emphasis">Verified Customer</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="carousel-item active">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8 text-center py-5">
+                                <p class="lead">"Absolutely stellar food. The Malabar biriyani matches the authentic taste of Calicut perfectly! A must-visit place in Riyadh."</p>
+                                <h4 class="review-author">Mohammed Al-Harbi</h4>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#reviewsCarousel" data-bs-slide="prev" style="width: 5%;">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#reviewsCarousel" data-bs-slide="next" style="width: 5%;">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Us & Form Section -->
+<section class="section-padding" id="contact">
+    <div class="container">
+        <div class="section-title text-center" data-fade-in>
+            <span class="text-uppercase text-warning fw-bold d-block mb-2">Get in Touch</span>
+            <h2>Contact & Find Us</h2>
+            <p>Visit Calicut Star in Riyadh or send us a message. We cater to family events, parties, and daily deliveries.</p>
+        </div>
+        
+        <div class="row g-5 mb-5" data-fade-in>
+            <!-- Form Column -->
+            <div class="col-lg-7">
+                <div class="contact-form-wrapper">
+                    <h3 class="mb-4 text-green" style="color: var(--primary-green); font-family: var(--font-heading); font-weight:700;">Send Us a Message</h3>
+                    
+                    <form id="contact-form" action="{% url 'contact_ajax' %}" method="POST">
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label fw-semibold">Your Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="name" name="name" required placeholder="Enter your full name">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="phone" class="form-label fw-semibold">Phone Number <span class="text-danger">*</span></label>
+                                <input type="tel" class="form-control" id="phone" name="phone" required placeholder="e.g. +966 50 123 4567">
+                            </div>
+                            <div class="col-12">
+                                <label for="email" class="form-label fw-semibold">Email Address (Optional)</label>
+                                <input type="email" class="form-control" id="email" name="email" placeholder="e.g. name@example.com">
+                            </div>
+                            <div class="col-12">
+                                <label for="message" class="form-label fw-semibold">Your Message <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="message" name="message" required placeholder="Write your questions or order requests here..."></textarea>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-green w-100 py-3 mt-2 text-uppercase fw-bold">
+                                    <i class="bi bi-send-fill me-2"></i>Send Message
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- Form Feedback alert placeholder -->
+                    <div id="form-feedback" class="alert mt-3 d-none"></div>
+                </div>
+            </div>
+            
+            <!-- Address details column -->
+            <div class="col-lg-5">
+                <div class="contact-info-card">
+                    <h3 class="contact-info-title">Calicut Star Restaurant</h3>
+                    
+                    <div class="contact-info-item">
+                        <div class="contact-info-icon">
+                            <i class="bi bi-geo-alt-fill"></i>
+                        </div>
+                        <div class="contact-info-text">
+                            <h5>Our Location</h5>
+                            <p>Old Haraj Market,<br>Manfuha, Riyadh,<br>Saudi Arabia</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-info-item">
+                        <div class="contact-info-icon">
+                            <i class="bi bi-telephone-fill"></i>
+                        </div>
+                        <div class="contact-info-text">
+                            <h5>Call Us</h5>
+                            <p><a href="tel:+966509653846" class="text-decoration-none text-muted">+966 50 965 3846</a></p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-info-item">
+                        <div class="contact-info-icon">
+                            <i class="bi bi-whatsapp"></i>
+                        </div>
+                        <div class="contact-info-text">
+                            <h5>WhatsApp Direct</h5>
+                            <p><a href="https://wa.me/966509653846" target="_blank" class="text-decoration-none text-muted">+966 50 965 3846</a></p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-info-item">
+                        <div class="contact-info-icon">
+                            <i class="bi bi-envelope-fill"></i>
+                        </div>
+                        <div class="contact-info-text">
+                            <h5>Email Address</h5>
+                            <p><a href="mailto:info@calicutstar.com" class="text-decoration-none text-muted">info@calicutstar.com</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Maps Embed -->
+        <div class="row" data-fade-in>
+            <div class="col-12">
+                <div class="map-container">
+                    <!-- Google Maps Iframe matching Manfuha, Riyadh -->
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3626.5413009587425!2d46.7214959!3d24.6050519!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e2f059e7e72b435%3A0xe54d4f8fbcc2a15c!2sOld%20Haraj%20Market%20Manfuha!5e0!3m2!1sen!2ssa!4v1716942000000!5m2!1sen!2ssa" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

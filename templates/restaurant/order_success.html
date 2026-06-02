@@ -1,0 +1,257 @@
+{% extends 'restaurant/base.html' %}
+{% load static %}
+
+{% block title %}Order Successful | Calicut Star Riyadh{% endblock %}
+
+{% block extra_css %}
+<style>
+    .success-container {
+        padding: 140px 0 100px;
+        background-color: var(--light-neutral);
+        min-height: 80vh;
+    }
+    .success-card {
+        background-color: var(--white);
+        border-radius: var(--border-radius-md);
+        box-shadow: var(--shadow-hover);
+        border: 2px solid rgba(11, 93, 59, 0.1);
+        padding: 50px 40px;
+        text-align: center;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    /* Animated Success Checkmark */
+    .success-checkmark {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 30px;
+    }
+    .check-icon {
+        width: 80px;
+        height: 80px;
+        position: relative;
+        border-radius: 50%;
+        box-sizing: content-box;
+        border: 4px solid #4CAF50;
+    }
+    .check-icon::after {
+        content: '';
+        position: absolute;
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        box-sizing: content-box;
+        border: 4px solid transparent;
+        z-index: 2;
+    }
+    .check-icon .icon-line {
+        height: 5px;
+        background-color: #4CAF50;
+        display: block;
+        border-radius: 2px;
+        position: absolute;
+        z-index: 10;
+    }
+    .check-icon .icon-line.line-tip {
+        width: 25px;
+        left: 14px;
+        top: 46px;
+        transform: rotate(45deg);
+        animation: icon-line-tip 0.75s;
+    }
+    .check-icon .icon-line.line-long {
+        width: 47px;
+        right: 8px;
+        top: 38px;
+        transform: rotate(-45deg);
+        animation: icon-line-long 0.75s;
+    }
+    
+    @keyframes icon-line-tip {
+        0% { width: 0; left: 1px; top: 19px; }
+        54% { width: 0; left: 1px; top: 19px; }
+        70% { width: 50px; left: 14px; top: 46px; }
+        84% { width: 17px; left: 21px; top: 48px; }
+        100% { width: 25px; left: 14px; top: 46px; }
+    }
+    @keyframes icon-line-long {
+        0% { width: 0; right: 46px; top: 54px; }
+        65% { width: 0; right: 46px; top: 54px; }
+        84% { width: 55px; right: 0px; top: 35px; }
+        100% { width: 47px; right: 8px; top: 38px; }
+    }
+
+    .success-title {
+        color: var(--primary-green);
+        font-family: var(--font-heading);
+        font-weight: 800;
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
+    .success-subtitle {
+        color: var(--gray-muted);
+        font-size: 1rem;
+        margin-bottom: 30px;
+    }
+    
+    /* Receipt Box */
+    .receipt-box {
+        background-color: var(--light-neutral);
+        border: 1px dashed rgba(0,0,0,0.15);
+        border-radius: var(--border-radius-sm);
+        padding: 25px;
+        text-align: left;
+        margin-bottom: 35px;
+    }
+    .receipt-title {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: var(--primary-green);
+        letter-spacing: 1px;
+        border-bottom: 1px solid rgba(0,0,0,0.08);
+        padding-bottom: 10px;
+        margin-bottom: 15px;
+    }
+    .receipt-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        font-size: 0.95rem;
+    }
+    .receipt-label {
+        color: var(--gray-muted);
+        font-weight: 500;
+    }
+    .receipt-value {
+        font-weight: 600;
+        color: var(--dark-neutral);
+    }
+    .receipt-items-list {
+        list-style: none;
+        padding: 0;
+        margin: 15px 0;
+        border-top: 1px solid rgba(0,0,0,0.08);
+        border-bottom: 1px solid rgba(0,0,0,0.08);
+        padding-top: 15px;
+        padding-bottom: 15px;
+    }
+    .receipt-item-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+    }
+    .receipt-total-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--primary-green);
+        font-family: var(--font-heading);
+        margin-top: 15px;
+    }
+    
+    /* Actions */
+    .btn-whatsapp-success {
+        background-color: #25D366;
+        color: white !important;
+        border: 2px solid #25D366;
+        padding: 14px 30px;
+        border-radius: var(--border-radius-sm);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.85rem;
+        transition: var(--transition-smooth);
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 15px;
+    }
+    .btn-whatsapp-success:hover {
+        background-color: #128C7E;
+        border-color: #128C7E;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="success-container">
+    <div class="container">
+        <div class="success-card" data-fade-in>
+            <!-- Checkmark -->
+            <div class="success-checkmark">
+                <div class="check-icon">
+                    <span class="icon-line line-tip"></span>
+                    <span class="icon-line line-long"></span>
+                </div>
+            </div>
+            
+            <h1 class="success-title">Order Confirmed!</h1>
+            <p class="success-subtitle">Thank you for dining with us. Your payment has been successfully verified.</p>
+            
+            <!-- Receipt Card -->
+            <div class="receipt-box">
+                <div class="receipt-title">Order Receipt</div>
+                
+                <div class="receipt-row">
+                    <span class="receipt-label">Order Reference</span>
+                    <span class="receipt-value text-green" style="color: var(--primary-green);">#CS-100{{ order.id }}</span>
+                </div>
+                <div class="receipt-row">
+                    <span class="receipt-label">Customer Name</span>
+                    <span class="receipt-value">{{ order.customer_name }}</span>
+                </div>
+                <div class="receipt-row">
+                    <span class="receipt-label">Phone Number</span>
+                    <span class="receipt-value">{{ order.phone }}</span>
+                </div>
+                <div class="receipt-row">
+                    <span class="receipt-label">Service Type</span>
+                    <span class="receipt-value">{{ order.delivery_option }}</span>
+                </div>
+                <div class="receipt-row">
+                    <span class="receipt-label">Table / Address</span>
+                    <span class="receipt-value">{{ order.address_or_table }}</span>
+                </div>
+                <div class="receipt-row">
+                    <span class="receipt-label">Transaction ID</span>
+                    <span class="receipt-value text-muted" style="font-size: 0.85rem;">{{ order.razorpay_payment_id|default:"Online Verification" }}</span>
+                </div>
+                
+                <!-- Ordered Items -->
+                <ul class="receipt-items-list">
+                    {% for item in items_list %}
+                    <li class="receipt-item-row">
+                        <span>{{ item.quantity }}x <span class="fw-semibold">{{ item.item_name }}</span></span>
+                        <span class="fw-semibold">{{ item.price }} SAR</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                
+                <!-- Total Amount -->
+                <div class="receipt-total-row">
+                    <span>Total Amount (Paid)</span>
+                    <span>{{ order.total_amount }} SAR</span>
+                </div>
+            </div>
+            
+            <!-- Send details to WhatsApp -->
+            <a href="https://wa.me/966509653846?text=Hello%20Calicut%20Star!%20I%20have%20placed%20order%20%23CS-100{{ order.id }}%20(PAID%20via%20Razorpay).%0A%0A*Order%20Details*:%0A-{{ items_summary|urlencode }}%0A%0A*Service%20Type*:%20{{ order.delivery_option|urlencode }}%0A*Table/Address*:%20{{ order.address_or_table|urlencode }}%0A*Total%20Paid*:%20{{ order.total_amount|urlencode }}%20SAR.%0A%0APlease%20verify%20and%20process%2520my%2520order%2520promptly." target="_blank" class="btn-whatsapp-success">
+                <i class="bi bi-whatsapp"></i> Send Confirmation to Restaurant
+            </a>
+            
+            <div class="d-flex justify-content-center gap-3">
+                <a href="{% url 'home' %}" class="btn btn-green px-4">Go to Homepage</a>
+                <a href="{% url 'menu' %}" class="btn btn-outline-gold px-4">View Menu Again</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

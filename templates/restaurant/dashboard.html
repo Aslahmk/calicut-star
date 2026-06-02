@@ -1,0 +1,507 @@
+{% extends 'restaurant/base.html' %}
+{% load static %}
+
+{% block title %}Executive Staff Dashboard | Calicut Star Riyadh{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-section {
+        padding: 140px 0 100px;
+        background-color: #F0F4F2;
+        min-height: 90vh;
+    }
+    
+    /* Metrics Row */
+    .metric-card {
+        background-color: var(--white);
+        border-radius: var(--border-radius-md);
+        box-shadow: var(--shadow-soft);
+        border-left: 5px solid var(--primary-green);
+        padding: 25px;
+        transition: var(--transition-smooth);
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .metric-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover);
+    }
+    .metric-card.gold-border {
+        border-left-color: var(--accent-gold);
+    }
+    .metric-card.brown-border {
+        border-left-color: var(--warm-brown);
+    }
+    .metric-title {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        color: var(--gray-muted);
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        margin-bottom: 5px;
+    }
+    .metric-value {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: var(--primary-green);
+        font-family: var(--font-heading);
+    }
+    .metric-icon {
+        font-size: 2.2rem;
+        color: rgba(11, 93, 59, 0.15);
+    }
+    .metric-card.gold-border .metric-icon {
+        color: rgba(212, 160, 23, 0.2);
+    }
+    .metric-card.brown-border .metric-icon {
+        color: rgba(107, 66, 38, 0.2);
+    }
+    
+    /* Dashboard Panels */
+    .dashboard-card {
+        background-color: var(--white);
+        border-radius: var(--border-radius-md);
+        box-shadow: var(--shadow-soft);
+        border: 1px solid rgba(0,0,0,0.05);
+        padding: 30px;
+        margin-bottom: 30px;
+    }
+    .dashboard-card-title {
+        color: var(--primary-green);
+        font-family: var(--font-heading);
+        font-weight: 700;
+        font-size: 1.4rem;
+        margin-bottom: 20px;
+        border-bottom: 1.5px solid rgba(11, 93, 59, 0.1);
+        padding-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    /* Status Badge Tabs */
+    .filter-tabs-wrapper {
+        overflow-x: auto;
+        white-space: nowrap;
+        margin-bottom: 25px;
+        padding-bottom: 5px;
+    }
+    .filter-badge-btn {
+        display: inline-block;
+        padding: 8px 18px;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        border: 1.5px solid #E2E8F0;
+        background-color: var(--white);
+        color: var(--gray-muted);
+        text-decoration: none;
+        margin-right: 8px;
+        transition: var(--transition-smooth);
+    }
+    .filter-badge-btn:hover, .filter-badge-btn.active {
+        background-color: var(--primary-green);
+        color: var(--white);
+        border-color: var(--primary-green);
+        box-shadow: 0 4px 10px rgba(11, 93, 59, 0.15);
+    }
+    .filter-badge-btn span.badge-num {
+        background-color: rgba(255,255,255,0.25);
+        color: inherit;
+        padding: 1px 6px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        margin-left: 5px;
+        border: 1px solid rgba(0,0,0,0.1);
+    }
+    .filter-badge-btn.active span.badge-num {
+        background-color: var(--accent-gold);
+        color: var(--white);
+        border-color: var(--accent-gold);
+    }
+    
+    /* Order Item List in Dashboard */
+    .dashboard-order-row {
+        border: 1px solid rgba(0,0,0,0.06);
+        border-radius: var(--border-radius-sm);
+        padding: 20px;
+        margin-bottom: 20px;
+        background-color: var(--white);
+        transition: var(--transition-smooth);
+    }
+    .dashboard-order-row:hover {
+        box-shadow: var(--shadow-soft);
+        border-color: rgba(11, 93, 59, 0.2);
+    }
+    .order-meta-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .status-badge-inline {
+        padding: 4px 12px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+    .status-Pending { background-color: #FFF3CD; color: #856404; }
+    .status-Confirmed { background-color: #D1ECF1; color: #0C5460; }
+    .status-Preparing { background-color: #FFE8D6; color: #A75D00; }
+    .status-Ready { background-color: #D4EDDA; color: #155724; }
+    .status-Delivery { background-color: #E8E8FF; color: #3F3FA3; }
+    .status-Delivered { background-color: var(--primary-green); color: var(--white); }
+    .status-Cancelled { background-color: #F8D7DA; color: #721C24; }
+    
+    .dash-details-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 15px;
+        background-color: var(--light-neutral);
+        padding: 15px;
+        border-radius: var(--border-radius-sm);
+        margin-bottom: 15px;
+    }
+    .dash-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: var(--gray-muted);
+        font-weight: 700;
+    }
+    .dash-val {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--dark-neutral);
+    }
+    .dash-items-box {
+        border-left: 3px solid var(--accent-gold);
+        padding-left: 15px;
+        margin-bottom: 15px;
+    }
+    
+    /* Control buttons */
+    .action-btn-group {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="dashboard-section">
+    <div class="container">
+        
+        <!-- Header -->
+        <div class="row mb-4 align-items-center">
+            <div class="col-md-8">
+                <h1 class="text-green" style="font-family: var(--font-heading); font-weight:800; font-size:2.5rem;">
+                    Executive Dashboard
+                </h1>
+                <p class="text-muted mb-0">Manage orders, view sales summaries, and monitor kitchen analytics in real-time.</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <a href="{% url 'home' %}" class="btn btn-outline-gold me-2 btn-sm"><i class="bi bi-house-door me-1"></i>Storefront</a>
+                <a href="/admin/" class="btn btn-gold btn-sm"><i class="bi bi-sliders me-1"></i>Django Admin</a>
+            </div>
+        </div>
+        
+        <!-- Messages -->
+        {% if messages %}
+        <div class="row mb-4">
+            <div class="col-12">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Metrics Row -->
+        <div class="row g-3 mb-4" data-fade-in>
+            <div class="col-md-4 col-sm-6">
+                <div class="metric-card">
+                    <div>
+                        <h4 class="metric-title">Sales Today</h4>
+                        <div class="metric-value">{{ sales_today|floatformat:2 }} SAR</div>
+                    </div>
+                    <div class="metric-icon"><i class="bi bi-wallet2"></i></div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+                <div class="metric-card gold-border">
+                    <div>
+                        <h4 class="metric-title">Sales Weekly</h4>
+                        <div class="metric-value">{{ sales_weekly|floatformat:2 }} SAR</div>
+                    </div>
+                    <div class="metric-icon"><i class="bi bi-graph-up-arrow"></i></div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-12">
+                <div class="metric-card brown-border">
+                    <div>
+                        <h4 class="metric-title">Sales Monthly</h4>
+                        <div class="metric-value">{{ sales_monthly|floatformat:2 }} SAR</div>
+                    </div>
+                    <div class="metric-icon"><i class="bi bi-calendar3"></i></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <!-- Left Side: Order Management (Col 8) -->
+            <div class="col-lg-8" data-fade-in>
+                <div class="dashboard-card">
+                    <div class="dashboard-card-title">
+                        <span><i class="bi bi-list-stars me-2"></i>Order Dispatch Queue</span>
+                    </div>
+                    
+                    <!-- Filters -->
+                    <div class="filter-tabs-wrapper">
+                        <a href="{% url 'staff_dashboard' %}" class="filter-badge-btn {% if selected_filter == 'Active' %}active{% endif %}">
+                            Active Orders
+                        </a>
+                        <a href="{% url 'staff_dashboard' %}?status_filter=Pending" class="filter-badge-btn {% if selected_filter == 'Pending' %}active{% endif %}">
+                            Pending <span class="badge-num">{{ status_counts.Pending }}</span>
+                        </a>
+                        <a href="{% url 'staff_dashboard' %}?status_filter=Confirmed" class="filter-badge-btn {% if selected_filter == 'Confirmed' %}active{% endif %}">
+                            Confirmed <span class="badge-num">{{ status_counts.Confirmed }}</span>
+                        </a>
+                        <a href="{% url 'staff_dashboard' %}?status_filter=Preparing" class="filter-badge-btn {% if selected_filter == 'Preparing' %}active{% endif %}">
+                            Cooking <span class="badge-num">{{ status_counts.Preparing }}</span>
+                        </a>
+                        <a href="{% url 'staff_dashboard' %}?status_filter=Ready" class="filter-badge-btn {% if selected_filter == 'Ready' %}active{% endif %}">
+                            Ready <span class="badge-num">{{ status_counts.Ready }}</span>
+                        </a>
+                        <a href="{% url 'staff_dashboard' %}?status_filter=Out for Delivery" class="filter-badge-btn {% if selected_filter == 'Out for Delivery' %}active{% endif %}">
+                            Transit <span class="badge-num text-dark">{{ status_counts.Out_for_Delivery|default:status_counts.Out_for_Delivery|default:0 }}</span>
+                        </a>
+                        <a href="{% url 'staff_dashboard' %}?status_filter=Delivered" class="filter-badge-btn {% if selected_filter == 'Delivered' %}active{% endif %}">
+                            Completed <span class="badge-num">{{ status_counts.Delivered }}</span>
+                        </a>
+                        <a href="{% url 'staff_dashboard' %}?status_filter=Cancelled" class="filter-badge-btn {% if selected_filter == 'Cancelled' %}active{% endif %}">
+                            Cancelled <span class="badge-num">{{ status_counts.Cancelled }}</span>
+                        </a>
+                    </div>
+                    
+                    <!-- Orders List -->
+                    {% if dashboard_orders %}
+                        {% for order in dashboard_orders %}
+                            <div class="dashboard-order-row">
+                                <div class="order-meta-info">
+                                    <div>
+                                        <strong class="text-green fs-5">#CS-100{{ order.id }}</strong>
+                                        <span class="text-muted small ms-2">{{ order.created_at|date:"M d, Y h:i A" }}</span>
+                                    </div>
+                                    <div>
+                                        <span class="status-badge-inline status-{{ order.status|cut:' ' }}">
+                                            {{ order.status }}
+                                        </span>
+                                        <span class="status-badge-inline ms-1 {% if order.payment_status == 'Paid' %}bg-success text-white{% else %}bg-warning text-dark{% endif %}">
+                                            {{ order.payment_status }}
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div class="dash-details-grid">
+                                    <div>
+                                        <div class="dash-label">Customer</div>
+                                        <div class="dash-val">{{ order.customer_name }}</div>
+                                        <div class="small text-muted">{{ order.phone }}</div>
+                                    </div>
+                                    <div>
+                                        <div class="dash-label">Delivery Mode</div>
+                                        <div class="dash-val">{{ order.delivery_option }}</div>
+                                    </div>
+                                    <div>
+                                        <div class="dash-label">Table / Address</div>
+                                        <div class="dash-val text-truncate" style="max-width: 150px;" title="{{ order.address_or_table }}">{{ order.address_or_table }}</div>
+                                    </div>
+                                    <div>
+                                        <div class="dash-label">Payment Mode</div>
+                                        <div class="dash-val">{{ order.get_payment_method_display }}</div>
+                                    </div>
+                                    <div>
+                                        <div class="dash-label">Total Amount</div>
+                                        <div class="dash-val text-green" style="color: var(--primary-green);">{{ order.total_amount }} SAR</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="dash-items-box">
+                                    <div class="dash-label mb-1">Items Summary</div>
+                                    <div class="row row-cols-1 row-cols-md-2 g-1">
+                                        {% for item in order.items.all %}
+                                            <div class="col small">
+                                                <i class="bi bi-chevron-right text-gold me-1"></i>
+                                                {{ item.quantity }}x <span class="fw-semibold">{{ item.item_name }}</span> ({{ item.price }} SAR)
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                
+                                {% if order.notes %}
+                                <div class="mb-3 p-2 bg-light rounded text-muted small border-start border-3 border-danger">
+                                    <strong>Cooking notes:</strong> "{{ order.notes }}"
+                                </div>
+                                {% endif %}
+                                
+                                <!-- Operations / Actions -->
+                                <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center border-top pt-3">
+                                    <div>
+                                        <a href="{% url 'invoice_view' order.id %}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                            <i class="bi bi-printer me-1"></i>Print Invoice
+                                        </a>
+                                        <a href="https://wa.me/{{ order.phone }}?text=Hello%20{{ order.customer_name }}!%20Calicut%20Star%20here.%20Your%20order%20%23CS-100{{ order.id }}%20is%20now%20{{ order.status }}.%20Thank%20you%20for%20choosing%20us." 
+                                           target="_blank" class="btn btn-sm btn-outline-success ms-1" style="color: #25D366; border-color: #25D366;">
+                                            <i class="bi bi-whatsapp"></i> Chat Customer
+                                        </a>
+                                    </div>
+                                    
+                                    <div class="action-btn-group">
+                                        {% if order.status == 'Pending' %}
+                                            <form action="{% url 'update_order_status' order.id %}" method="POST" class="d-inline">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="status" value="Confirmed">
+                                                <button type="submit" class="btn btn-sm btn-primary"><i class="bi bi-check-lg me-1"></i>Confirm</button>
+                                            </form>
+                                        {% elif order.status == 'Confirmed' %}
+                                            <form action="{% url 'update_order_status' order.id %}" method="POST" class="d-inline">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="status" value="Preparing">
+                                                <button type="submit" class="btn btn-sm btn-warning text-white"><i class="bi bi-fire me-1"></i>Start Cooking</button>
+                                            </form>
+                                        {% elif order.status == 'Preparing' %}
+                                            <form action="{% url 'update_order_status' order.id %}" method="POST" class="d-inline">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="status" value="Ready">
+                                                <button type="submit" class="btn btn-sm btn-info text-white"><i class="bi bi-bag-check me-1"></i>Mark Ready</button>
+                                            </form>
+                                        {% elif order.status == 'Ready' %}
+                                            {% if order.delivery_option == 'Delivery' %}
+                                                <form action="{% url 'update_order_status' order.id %}" method="POST" class="d-inline">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="status" value="Out for Delivery">
+                                                    <button type="submit" class="btn btn-sm btn-primary"><i class="bi bi-truck me-1"></i>Send Out</button>
+                                                </form>
+                                            {% else %}
+                                                <form action="{% url 'update_order_status' order.id %}" method="POST" class="d-inline">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="status" value="Delivered">
+                                                    <button type="submit" class="btn btn-sm btn-success"><i class="bi bi-box-seam me-1"></i>Serve/Deliver</button>
+                                                </form>
+                                            {% endif %}
+                                        {% elif order.status == 'Out for Delivery' %}
+                                            <form action="{% url 'update_order_status' order.id %}" method="POST" class="d-inline">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="status" value="Delivered">
+                                                <button type="submit" class="btn btn-sm btn-success"><i class="bi bi-check2-all me-1"></i>Complete Delivery</button>
+                                            </form>
+                                        {% endif %}
+                                        
+                                        {% if order.status != 'Delivered' and order.status != 'Cancelled' %}
+                                            <form action="{% url 'update_order_status' order.id %}" method="POST" class="d-inline">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="status" value="Cancelled">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to cancel Order #CS-100{{ order.id }}?');">
+                                                    <i class="bi bi-x-circle me-1"></i>Cancel
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-5 text-muted">
+                            <i class="bi bi-inbox-fill mb-2" style="font-size: 3rem;"></i>
+                            <h5>No Orders Found</h5>
+                            <p class="mb-0">There are no orders matching this filter.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Right Side: Analytics & Top Dishes (Col 4) -->
+            <div class="col-lg-4" data-fade-in>
+                
+                <!-- Popular Dishes Leaderboard -->
+                <div class="dashboard-card">
+                    <h3 class="dashboard-card-title">
+                        <span><i class="bi bi-award-fill text-gold me-2"></i>Top Dishes</span>
+                    </h3>
+                    
+                    {% if popular_dishes %}
+                        <div class="table-responsive">
+                            <table class="table table-hover table-borderless align-middle mb-0">
+                                <thead>
+                                    <tr class="border-bottom text-muted" style="font-size: 0.75rem;">
+                                        <th>Item Name</th>
+                                        <th class="text-center">Qty Sold</th>
+                                        <th class="text-end">Sales (SAR)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for dish in popular_dishes %}
+                                        <tr style="font-size: 0.85rem;">
+                                            <td>
+                                                <span class="fw-bold text-dark">{{ dish.item_name }}</span>
+                                            </td>
+                                            <td class="text-center fw-semibold text-muted">
+                                                {{ dish.total_qty }}
+                                            </td>
+                                            <td class="text-end fw-bold text-green" style="color: var(--primary-green);">
+                                                {{ dish.total_sales|floatformat:2 }}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4 text-muted small">
+                            No dishes recorded in completed orders yet.
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Short Kitchen Actions Summary -->
+                <div class="dashboard-card">
+                    <h3 class="dashboard-card-title">
+                        <span><i class="bi bi-activity me-2"></i>System Status</span>
+                    </h3>
+                    <ul class="list-unstyled mb-0" style="font-size: 0.85rem;">
+                        <li class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Total Pending Orders:</span>
+                            <span class="badge rounded-pill bg-warning text-dark">{{ status_counts.Pending }}</span>
+                        </li>
+                        <li class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Total Cooking Orders:</span>
+                            <span class="badge rounded-pill bg-info text-white">{{ status_counts.Preparing }}</span>
+                        </li>
+                        <li class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Total Ready Orders:</span>
+                            <span class="badge rounded-pill bg-success">{{ status_counts.Ready }}</span>
+                        </li>
+                        <li class="d-flex justify-content-between">
+                            <span class="text-muted">Total Completed (Delivered):</span>
+                            <span class="badge rounded-pill bg-secondary">{{ status_counts.Delivered }}</span>
+                        </li>
+                    </ul>
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</section>
+{% endblock %}

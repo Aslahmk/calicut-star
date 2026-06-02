@@ -1,0 +1,408 @@
+{% extends 'restaurant/base.html' %}
+{% load static %}
+
+{% block title %}Track Your Order | Calicut Star Riyadh{% endblock %}
+
+{% block extra_css %}
+<style>
+    .tracking-section {
+        padding: 140px 0 100px;
+        background-color: var(--light-neutral);
+        min-height: 80vh;
+    }
+    .tracking-search-card {
+        background-color: var(--white);
+        border-radius: var(--border-radius-md);
+        box-shadow: var(--shadow-soft);
+        border: 1px solid rgba(0,0,0,0.05);
+        padding: 40px;
+        max-width: 650px;
+        margin: 0 auto 40px;
+        text-align: center;
+    }
+    .tracking-search-title {
+        color: var(--primary-green);
+        font-family: var(--font-heading);
+        font-weight: 700;
+        font-size: 2rem;
+        margin-bottom: 15px;
+    }
+    .tracking-search-desc {
+        color: var(--gray-muted);
+        font-size: 0.95rem;
+        margin-bottom: 25px;
+    }
+    
+    .order-card {
+        background-color: var(--white);
+        border-radius: var(--border-radius-md);
+        box-shadow: var(--shadow-soft);
+        border: 1px solid rgba(0,0,0,0.05);
+        padding: 30px;
+        margin-bottom: 30px;
+        transition: var(--transition-smooth);
+    }
+    .order-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover);
+    }
+    .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(0,0,0,0.06);
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    .order-ref {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--primary-green);
+    }
+    .order-date {
+        font-size: 0.85rem;
+        color: var(--gray-muted);
+    }
+    
+    /* Progress Tracker Steps */
+    .tracker-steps {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        margin: 30px 0 40px;
+        padding: 0 10px;
+    }
+    .tracker-line {
+        position: absolute;
+        top: 20px;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background-color: #E2E8F0;
+        z-index: 1;
+    }
+    .tracker-line-fill {
+        position: absolute;
+        top: 20px;
+        left: 0;
+        height: 4px;
+        background-color: var(--accent-gold);
+        z-index: 1;
+        transition: width 0.5s ease-in-out;
+    }
+    .step-item {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 18%;
+    }
+    .step-bubble {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background-color: #E2E8F0;
+        color: var(--gray-muted);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        border: 4px solid var(--white);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        transition: var(--transition-smooth);
+    }
+    .step-label {
+        margin-top: 10px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--gray-muted);
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    /* Active & Completed step styling */
+    .step-item.completed .step-bubble {
+        background-color: var(--primary-green);
+        color: var(--white);
+    }
+    .step-item.completed .step-label {
+        color: var(--primary-green);
+    }
+    .step-item.active .step-bubble {
+        background-color: var(--accent-gold);
+        color: var(--white);
+        transform: scale(1.15);
+        box-shadow: 0 0 0 5px rgba(212, 160, 23, 0.25);
+    }
+    .step-item.active .step-label {
+        color: var(--accent-gold);
+    }
+    
+    .status-badge {
+        padding: 6px 16px;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+    .status-pending { background-color: #FFF3CD; color: #856404; }
+    .status-confirmed { background-color: #D1ECF1; color: #0C5460; }
+    .status-preparing { background-color: #FFE8D6; color: #A75D00; }
+    .status-ready { background-color: #D4EDDA; color: #155724; }
+    .status-delivery { background-color: #E8E8FF; color: #3F3FA3; }
+    .status-delivered { background-color: var(--primary-green); color: var(--white); }
+    .status-cancelled { background-color: #F8D7DA; color: #721C24; }
+    
+    /* Details block */
+    .order-details-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+        background-color: var(--light-neutral);
+        padding: 20px;
+        border-radius: var(--border-radius-sm);
+    }
+    .details-group {
+        display: flex;
+        flex-direction: column;
+    }
+    .details-label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        color: var(--gray-muted);
+        font-weight: 700;
+        margin-bottom: 5px;
+        letter-spacing: 0.5px;
+    }
+    .details-val {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--dark-neutral);
+    }
+    
+    /* Items and Pricing in tracking */
+    .items-summary-list {
+        margin-top: 20px;
+        border-top: 1px solid rgba(0,0,0,0.06);
+        padding-top: 15px;
+    }
+    .items-summary-title {
+        font-family: var(--font-heading);
+        font-weight: 700;
+        color: var(--primary-green);
+        margin-bottom: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="tracking-section">
+    <div class="container">
+        
+        <!-- Search Card -->
+        <div class="tracking-search-card" data-fade-in>
+            <h1 class="tracking-search-title"><i class="bi bi-geo-fill text-gold me-2"></i>Track Your Order</h1>
+            <p class="tracking-search-desc">
+                Enter the phone number associated with your order to see live preparation, cooking, and delivery updates.
+            </p>
+            
+            <form action="{% url 'order_tracking' %}" method="GET" class="row g-2 justify-content-center">
+                <div class="col-md-8 col-sm-9">
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-telephone-fill"></i></span>
+                        <input type="text" name="phone" value="{{ phone }}" class="form-control border-start-0 ps-0" placeholder="e.g. +966509653846" required>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-3 d-grid">
+                    <button type="submit" class="btn btn-gold btn-lg"><i class="bi bi-search me-2"></i>Track</button>
+                </div>
+            </form>
+        </div>
+        
+        {% if phone %}
+            <div class="max-width-800 mx-auto">
+                <h3 class="mb-4 text-center text-green" style="font-family: var(--font-heading); font-weight:700;">
+                    Found {{ orders|length }} order{{ orders|pluralize }} for phone: <span class="text-gold">{{ phone }}</span>
+                </h3>
+                
+                {% if orders %}
+                    {% for order in orders %}
+                        <div class="order-card" data-fade-in>
+                            <div class="order-header">
+                                <div>
+                                    <span class="order-ref">Order #CS-100{{ order.id }}</span>
+                                    <span class="order-date ms-2">| {{ order.created_at|date:"M d, Y h:i A" }}</span>
+                                </div>
+                                <div>
+                                    {% if order.status == 'Pending' %}
+                                        <span class="status-badge status-pending">Pending Approval</span>
+                                    {% elif order.status == 'Confirmed' %}
+                                        <span class="status-badge status-confirmed">Confirmed</span>
+                                    {% elif order.status == 'Preparing' %}
+                                        <span class="status-badge status-preparing">In Kitchen</span>
+                                    {% elif order.status == 'Ready' %}
+                                        <span class="status-badge status-ready">Ready for Pickup</span>
+                                    {% elif order.status == 'Out for Delivery' %}
+                                        <span class="status-badge status-delivery">Out for Delivery</span>
+                                    {% elif order.status == 'Delivered' %}
+                                        <span class="status-badge status-delivered">Delivered</span>
+                                    {% elif order.status == 'Cancelled' %}
+                                        <span class="status-badge status-cancelled">Cancelled</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Custom Progress Steps -->
+                            {% if order.status != 'Cancelled' %}
+                            <div class="tracker-steps">
+                                <!-- Line background and filler -->
+                                <div class="tracker-line"></div>
+                                <div class="tracker-line-fill" 
+                                     style="{% if order.status == 'Pending' %}width: 0%;{% elif order.status == 'Confirmed' %}width: 25%;{% elif order.status == 'Preparing' %}width: 50%;{% elif order.status == 'Ready' or order.status == 'Out for Delivery' %}width: 75%;{% elif order.status == 'Delivered' %}width: 100%;{% endif %}">
+                                </div>
+                                
+                                <!-- Step 1: Placed -->
+                                <div class="step-item {% if order.status == 'Pending' %}active{% else %}completed{% endif %}">
+                                    <div class="step-bubble"><i class="bi bi-receipt"></i></div>
+                                    <div class="step-label">Placed</div>
+                                </div>
+                                
+                                <!-- Step 2: Confirmed -->
+                                <div class="step-item {% if order.status == 'Confirmed' %}active{% elif order.status != 'Pending' %}completed{% endif %}">
+                                    <div class="step-bubble"><i class="bi bi-check-circle"></i></div>
+                                    <div class="step-label">Confirmed</div>
+                                </div>
+                                
+                                <!-- Step 3: Preparing -->
+                                <div class="step-item {% if order.status == 'Preparing' %}active{% elif order.status != 'Pending' and order.status != 'Confirmed' %}completed{% endif %}">
+                                    <div class="step-bubble"><i class="bi bi-fire"></i></div>
+                                    <div class="step-label">Cooking</div>
+                                </div>
+                                
+                                <!-- Step 4: Ready / Transit -->
+                                <div class="step-item {% if order.status == 'Ready' or order.status == 'Out for Delivery' %}active{% elif order.status == 'Delivered' %}completed{% endif %}">
+                                    <div class="step-bubble">
+                                        {% if order.delivery_option == 'Delivery' %}
+                                            <i class="bi bi-truck"></i>
+                                        {% else %}
+                                            <i class="bi bi-bag-check"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div class="step-label">
+                                        {% if order.delivery_option == 'Delivery' %}Transit{% else %}Ready{% endif %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Step 5: Delivered -->
+                                <div class="step-item {% if order.status == 'Delivered' %}active{% endif %}">
+                                    <div class="step-bubble"><i class="bi bi-emoji-smile"></i></div>
+                                    <div class="step-label">Delivered</div>
+                                </div>
+                            </div>
+                            {% else %}
+                            <div class="alert alert-danger py-2 mb-4 d-flex align-items-center">
+                                <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+                                <span>This order has been cancelled. Please contact Calicut Star management for assistance.</span>
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Delivery details block -->
+                            <div class="order-details-grid">
+                                <div class="details-group">
+                                    <span class="details-label">Service Mode</span>
+                                    <span class="details-val">{{ order.delivery_option }}</span>
+                                </div>
+                                <div class="details-group">
+                                    <span class="details-label">Table No / Address</span>
+                                    <span class="details-val">{{ order.address_or_table }}</span>
+                                </div>
+                                <div class="details-group">
+                                    <span class="details-label">Payment Mode</span>
+                                    <span class="details-val">{{ order.get_payment_method_display }}</span>
+                                </div>
+                                <div class="details-group">
+                                    <span class="details-label">Payment Status</span>
+                                    <span class="details-val text-capitalize fw-bold {% if order.payment_status == 'Paid' %}text-success{% else %}text-warning{% endif %}">
+                                        {{ order.payment_status }}
+                                    </span>
+                                </div>
+                                <div class="details-group">
+                                    <span class="details-label">Total Amount</span>
+                                    <span class="details-val text-green" style="color: var(--primary-green); font-size:1.1rem; font-family: var(--font-heading);">
+                                        {{ order.total_amount }} SAR
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <!-- Items Summary -->
+                            <div class="items-summary-list">
+                                <h5 class="items-summary-title">Ordered Items</h5>
+                                <div class="row row-cols-1 row-cols-md-2 g-2">
+                                    {% for item in order.items.all %}
+                                        <div class="col">
+                                            <div class="d-flex justify-content-between border-bottom pb-1">
+                                                <span>{{ item.quantity }}x <span class="fw-semibold text-dark">{{ item.item_name }}</span></span>
+                                                <span class="text-muted">{{ item.price }} SAR</span>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            {% if order.notes %}
+                            <div class="mt-3">
+                                <span class="details-label">Your Cooking Notes:</span>
+                                <p class="text-muted mb-0 small italic">"{{ order.notes }}"</p>
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Tracking Actions -->
+                            <div class="d-flex flex-wrap gap-2 mt-4 pt-3 border-top justify-content-between align-items-center">
+                                <div>
+                                    <!-- Print invoice -->
+                                    <a href="{% url 'invoice_view' order.id %}" target="_blank" class="btn btn-outline-green btn-sm border-green text-green" style="font-weight: 600;">
+                                        <i class="bi bi-printer me-1"></i>View & Print Invoice
+                                    </a>
+                                </div>
+                                
+                                <div class="d-flex gap-2">
+                                    <!-- Inquiry WhatsApp Button -->
+                                    <a href="https://wa.me/966509653846?text=Hello%20Calicut%20Star!%20I%20am%20inquiring%20about%20order%20status%20for%20order%20%23CS-100{{ order.id }}.%20Current%20status%20shows%20as%20{{ order.status }}.%20Please%20verify." 
+                                       target="_blank" 
+                                       class="btn btn-sm btn-success px-3 py-2 d-inline-flex align-items-center gap-2 fw-semibold" 
+                                       style="background-color: #25D366; border-color: #25D366;">
+                                        <i class="bi bi-whatsapp"></i> Chat on WhatsApp
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-5 text-muted card shadow-sm border-0">
+                        <div class="card-body">
+                            <i class="bi bi-emoji-frown" style="font-size: 3rem; color: var(--accent-gold);"></i>
+                            <h4 class="mt-3 text-dark">No Orders Found</h4>
+                            <p>We couldn't find any orders placed under the phone number: <strong>{{ phone }}</strong>.</p>
+                            <p class="small">Make sure the number is exact or try searching another.</p>
+                            <a href="{% url 'menu' %}" class="btn btn-gold mt-2">Place an Order</a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        {% else %}
+            <!-- Initial track layout helper -->
+            <div class="max-width-600 mx-auto text-center py-4 text-muted">
+                <i class="bi bi-clock-history text-muted opacity-50" style="font-size: 5rem;"></i>
+                <p class="mt-3">Lookup active order progress like food preparation in kitchen, driver dispatch, and delivery confirmation instantly.</p>
+            </div>
+        {% endif %}
+        
+    </div>
+</section>
+{% endblock %}

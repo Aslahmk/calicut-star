@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tax Invoice - #CS-100{{ order.id }} | Calicut Star</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8f9fa;
+            color: #212529;
+            margin: 0;
+            padding: 40px 0;
+            -webkit-print-color-adjust: exact;
+        }
+        .invoice-wrapper {
+            background-color: #ffffff;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            border: 1px solid #e9ecef;
+            position: relative;
+        }
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2px solid #0B5D3B;
+            padding-bottom: 25px;
+            margin-bottom: 30px;
+        }
+        .brand-info h1 {
+            color: #0B5D3B;
+            margin: 0 0 5px;
+            font-size: 2.2rem;
+            font-weight: 800;
+        }
+        .brand-info h1 span {
+            color: #D4A017;
+        }
+        .brand-tagline {
+            color: #6B4226;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .brand-address {
+            font-size: 0.85rem;
+            color: #6c757d;
+            line-height: 1.4;
+        }
+        .invoice-meta {
+            text-align: right;
+        }
+        .invoice-title {
+            color: #0B5D3B;
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin: 0 0 10px;
+        }
+        .meta-row {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        .meta-label {
+            color: #6c757d;
+            font-weight: 500;
+        }
+        .meta-value {
+            font-weight: 600;
+            color: #212529;
+        }
+        
+        .client-billing-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-bottom: 35px;
+            background-color: #F7F9F8;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        .billing-section-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: #0B5D3B;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #cbd5e1;
+            padding-bottom: 5px;
+        }
+        .billing-row {
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+        .billing-label {
+            color: #6c757d;
+            font-weight: 500;
+        }
+        .billing-value {
+            font-weight: 600;
+        }
+        
+        /* Items Table */
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        .items-table th {
+            background-color: #0B5D3B;
+            color: #ffffff;
+            padding: 12px 15px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            text-align: left;
+        }
+        .items-table th:nth-child(3), .items-table th:nth-child(4) {
+            text-align: right;
+        }
+        .items-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 0.95rem;
+        }
+        .items-table td:nth-child(3), .items-table td:nth-child(4) {
+            text-align: right;
+        }
+        .item-name {
+            font-weight: 600;
+            color: #212529;
+        }
+        
+        /* Pricing summary */
+        .pricing-summary-wrapper {
+            display: flex;
+            justify-content: flex-end;
+        }
+        .pricing-summary {
+            width: 320px;
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 0.95rem;
+        }
+        .summary-row.total {
+            border-top: 2px solid #0B5D3B;
+            padding-top: 12px;
+            margin-top: 8px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #0B5D3B;
+        }
+        
+        .vat-notice {
+            font-size: 0.8rem;
+            color: #6c757d;
+            text-align: right;
+            margin-top: 10px;
+            font-style: italic;
+        }
+        
+        /* Footer Note */
+        .invoice-footer {
+            border-top: 1px solid #e9ecef;
+            padding-top: 25px;
+            margin-top: 40px;
+            text-align: center;
+            color: #6c757d;
+            font-size: 0.85rem;
+        }
+        
+        /* Floating Control buttons */
+        .invoice-controls {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+        .btn-action {
+            background-color: #0B5D3B;
+            color: #ffffff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(11, 93, 59, 0.3);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        .btn-action:hover {
+            background-color: #05301E;
+            transform: translateY(-2px);
+        }
+        .btn-action.btn-secondary {
+            background-color: #6c757d;
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+        }
+        .btn-action.btn-secondary:hover {
+            background-color: #495057;
+        }
+        
+        /* Print media rules */
+        @media print {
+            body {
+                background-color: #ffffff;
+                padding: 0;
+            }
+            .invoice-wrapper {
+                box-shadow: none;
+                border: none;
+                padding: 0;
+                max-width: 100%;
+            }
+            .invoice-controls {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="invoice-wrapper">
+        <!-- Header -->
+        <div class="invoice-header">
+            <div class="brand-info">
+                <h1>Calicut <span>Star</span></h1>
+                <div class="brand-tagline">Serving the Soul of Malabar in the Heart of Riyadh</div>
+                <div class="brand-address">
+                    Old Haraj Market, Manfuha<br>
+                    Riyadh, Saudi Arabia<br>
+                    Phone: +966 50 965 3846<br>
+                    <strong>VAT No: 301234567800003</strong>
+                </div>
+            </div>
+            
+            <div class="invoice-meta">
+                <div class="invoice-title">Tax Invoice</div>
+                <div class="meta-row">
+                    <span class="meta-label">Invoice No:</span>
+                    <span class="meta-value">#CS-100{{ order.id }}</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Date:</span>
+                    <span class="meta-value">{{ order.created_at|date:"Y-m-d" }}</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Time:</span>
+                    <span class="meta-value">{{ order.created_at|date:"h:i A" }}</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Status:</span>
+                    <span class="meta-value text-uppercase" style="color: #0B5D3B;">{{ order.payment_status }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Customer & Order details -->
+        <div class="client-billing-grid">
+            <div>
+                <div class="billing-section-title">Billed To</div>
+                <div class="billing-row">
+                    <span class="billing-label">Name:</span>
+                    <span class="billing-value">{{ order.customer_name }}</span>
+                </div>
+                <div class="billing-row">
+                    <span class="billing-label">Phone:</span>
+                    <span class="billing-value">{{ order.phone }}</span>
+                </div>
+            </div>
+            
+            <div>
+                <div class="billing-section-title">Order Info</div>
+                <div class="billing-row">
+                    <span class="billing-label">Service Type:</span>
+                    <span class="billing-value">{{ order.delivery_option }}</span>
+                </div>
+                <div class="billing-row">
+                    <span class="billing-label">Table / Address:</span>
+                    <span class="billing-value">{{ order.address_or_table }}</span>
+                </div>
+                <div class="billing-row">
+                    <span class="billing-label">Payment Mode:</span>
+                    <span class="billing-value">{{ order.get_payment_method_display }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Table -->
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Item Description</th>
+                    <th>Qty</th>
+                    <th>Unit Price (SAR)</th>
+                    <th>Total (SAR)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items_list %}
+                <tr>
+                    <td class="item-name">{{ item.item_name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.price }}</td>
+                    <td>{% widthratio item.price 1 item.quantity %} SAR</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <!-- Pricing Summary -->
+        <div class="pricing-summary-wrapper">
+            <div class="pricing-summary">
+                <!-- 15% VAT calculations -->
+                <div class="summary-row">
+                    <span class="text-muted">Subtotal (VAT Excl.):</span>
+                    <!-- Total / 1.15 -->
+                    <span id="subtotal-ex-vat">Calculating...</span>
+                </div>
+                <div class="summary-row">
+                    <span class="text-muted">VAT (15%):</span>
+                    <!-- Total - (Total / 1.15) -->
+                    <span id="vat-amount">Calculating...</span>
+                </div>
+                <div class="summary-row">
+                    <span class="text-muted">Delivery Charge:</span>
+                    <span class="text-success fw-bold">FREE</span>
+                </div>
+                
+                <div class="summary-row total">
+                    <span>Total (Incl. VAT):</span>
+                    <span>{{ order.total_amount }} SAR</span>
+                </div>
+                
+                <div class="vat-notice">
+                    * Simplified Tax Invoice. All prices include 15% VAT.
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="invoice-footer">
+            <p class="fw-bold" style="color: #0B5D3B;">Thank you for dining with Calicut Star!</p>
+            <p>Serving the Soul of Malabar in the Heart of Riyadh. Visit us again at Old Haraj Market, Manfuha.</p>
+        </div>
+    </div>
+    
+    <!-- Controls (hidden on print) -->
+    <div class="invoice-controls">
+        <button class="btn-action btn-secondary" onclick="window.close();"><i class="bi bi-x-lg"></i> Close</button>
+        <button class="btn-action" onclick="window.print();"><i class="bi bi-printer"></i> Print Invoice</button>
+    </div>
+
+    <!-- VAT Math JS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const total = parseFloat("{{ order.total_amount }}");
+            if (!isNaN(total)) {
+                const subtotal = total / 1.15;
+                const vat = total - subtotal;
+                
+                document.getElementById('subtotal-ex-vat').textContent = `${subtotal.toFixed(2)} SAR`;
+                document.getElementById('vat-amount').textContent = `${vat.toFixed(2)} SAR`;
+            }
+        });
+    </script>
+</body>
+</html>

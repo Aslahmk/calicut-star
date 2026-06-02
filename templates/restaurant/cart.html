@@ -1,0 +1,311 @@
+{% extends 'restaurant/base.html' %}
+{% load static %}
+
+{% block title %}Shopping Cart | Calicut Star Riyadh{% endblock %}
+
+{% block extra_css %}
+<style>
+    .cart-section {
+        padding: 140px 0 100px;
+        background-color: var(--light-neutral);
+        min-height: 80vh;
+    }
+    .cart-card {
+        background-color: var(--white);
+        border-radius: var(--border-radius-md);
+        box-shadow: var(--shadow-soft);
+        border: 1px solid rgba(0,0,0,0.05);
+        padding: 30px;
+        margin-bottom: 30px;
+    }
+    .cart-title {
+        color: var(--primary-green);
+        font-family: var(--font-heading);
+        font-weight: 700;
+        font-size: 1.8rem;
+        margin-bottom: 25px;
+        border-bottom: 2px solid rgba(11, 93, 59, 0.1);
+        padding-bottom: 15px;
+    }
+    .cart-item-row {
+        display: flex;
+        align-items: center;
+        padding: 20px 0;
+        border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+    .cart-item-row:last-child {
+        border-bottom: none;
+    }
+    .cart-item-img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: var(--border-radius-sm);
+        margin-right: 20px;
+        border: 1px solid rgba(0,0,0,0.08);
+    }
+    .cart-item-details {
+        flex-grow: 1;
+    }
+    .cart-item-name {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--primary-green);
+        margin-bottom: 5px;
+    }
+    .cart-item-type {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        font-weight: 600;
+        color: var(--accent-gold);
+    }
+    .cart-qty-control {
+        width: 120px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        margin-right: 30px;
+    }
+    .cart-item-price {
+        font-family: var(--font-heading);
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--dark-neutral);
+        min-width: 100px;
+        text-align: right;
+        margin-right: 30px;
+    }
+    .cart-remove-btn {
+        background: transparent;
+        border: none;
+        color: #DC3545;
+        font-size: 1.25rem;
+        transition: var(--transition-smooth);
+        padding: 5px;
+    }
+    .cart-remove-btn:hover {
+        transform: scale(1.1);
+        color: #bd2130;
+    }
+    
+    /* Summary Card */
+    .summary-card {
+        background-color: var(--white);
+        border-radius: var(--border-radius-md);
+        box-shadow: var(--shadow-soft);
+        border: 2px solid var(--primary-green);
+        padding: 30px;
+        position: sticky;
+        top: 100px;
+    }
+    .summary-title {
+        color: var(--primary-green);
+        font-family: var(--font-heading);
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        border-bottom: 1.5px solid rgba(11, 93, 59, 0.15);
+        padding-bottom: 10px;
+    }
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        font-size: 1rem;
+    }
+    .summary-total {
+        display: flex;
+        justify-content: space-between;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--primary-green);
+        font-family: var(--font-heading);
+        border-top: 1.5px solid rgba(11, 93, 59, 0.15);
+        padding-top: 15px;
+        margin-top: 15px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="cart-section">
+    <div class="container">
+        
+        <!-- Messages -->
+        {% if messages %}
+        <div class="row mb-4">
+            <div class="col-12">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="row g-4">
+            <!-- Items List (Col 8) -->
+            <div class="col-lg-8" data-fade-in>
+                <div class="cart-card">
+                    <h2 class="cart-title"><i class="bi bi-cart3 me-2"></i>Review Your Order</h2>
+                    
+                    {% if cart %}
+                        <div class="cart-items-wrapper">
+                            {% for item in cart %}
+                            <div class="cart-item-row" data-key="{{ item.key }}" data-id="{{ item.item_id }}" data-type="{{ item.item_type }}" data-price="{{ item.price }}">
+                                <!-- Image -->
+                                {% if item.item.image %}
+                                    <img src="{{ item.item.image.url }}" alt="{{ item.name }}" class="cart-item-img">
+                                {% else %}
+                                    <img src="{% static 'images/default_food.png' %}" alt="{{ item.name }}" class="cart-item-img">
+                                {% endif %}
+                                
+                                <!-- Details -->
+                                <div class="cart-item-details">
+                                    <div class="cart-item-type">{{ item.item_type }}</div>
+                                    <h4 class="cart-item-name">{{ item.name }}</h4>
+                                    <small class="text-muted">{{ item.price }} SAR each</small>
+                                </div>
+                                
+                                <!-- Quantity Controls -->
+                                <div class="cart-qty-control">
+                                    <button class="btn btn-outline-secondary btn-sm py-0 fw-bold qty-change" data-delta="-1">-</button>
+                                    <input type="text" class="form-control text-center py-0 fw-bold qty-input" value="{{ item.quantity }}" readonly style="background: white; font-size: 0.9rem;">
+                                    <button class="btn btn-outline-secondary btn-sm py-0 fw-bold qty-change" data-delta="1">+</button>
+                                </div>
+                                
+                                <!-- Total Price -->
+                                <div class="cart-item-price item-total-price">
+                                    {{ item.total_price }} SAR
+                                </div>
+                                
+                                <!-- Remove -->
+                                <form action="{% url 'cart_remove' %}" method="POST" class="d-inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="item_id" value="{{ item.item_id }}">
+                                    <input type="hidden" name="item_type" value="{{ item.item_type }}">
+                                    <button type="submit" class="cart-remove-btn" title="Remove item">
+                                        <i class="bi bi-trash3-fill"></i>
+                                    </button>
+                                </form>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5 text-muted">
+                            <i class="bi bi-cart-x" style="font-size: 4rem;"></i>
+                            <h4 class="mt-3">Your Cart is Empty</h4>
+                            <p>You haven't added any dishes yet. Head over to our menu and explore authentic Malabar flavors!</p>
+                            <a href="{% url 'menu' %}" class="btn btn-green mt-3">Browse Menu</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Summary Sidebar (Col 4) -->
+            {% if cart %}
+            <div class="col-lg-4" data-fade-in>
+                <div class="summary-card">
+                    <h3 class="summary-title">Summary</h3>
+                    
+                    <div class="summary-row">
+                        <span class="text-muted">Subtotal</span>
+                        <span id="summary-subtotal" class="fw-semibold">{{ cart.get_total_price }} SAR</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="text-muted">Delivery Charge</span>
+                        <span class="text-success fw-bold">FREE</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="text-muted">Tax (VAT 15% incl.)</span>
+                        <span class="fw-semibold">Included</span>
+                    </div>
+                    
+                    <div class="summary-total">
+                        <span>Total Price</span>
+                        <span id="summary-total">{{ cart.get_total_price }} SAR</span>
+                    </div>
+                    
+                    <div class="d-grid gap-2 mt-4">
+                        <a href="{% url 'checkout' %}" class="btn btn-gold py-3 text-uppercase fw-bold" style="font-size: 0.85rem; letter-spacing: 0.5px;">
+                            <i class="bi bi-shield-lock-fill me-2"></i>Proceed to Checkout
+                        </a>
+                        <a href="{% url 'menu' %}" class="btn btn-outline-green py-2 border-green text-green" style="font-size: 0.85rem; border: 2px solid; font-weight:600;">
+                            Continue Shopping
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const qtyButtons = document.querySelectorAll('.qty-change');
+        
+        qtyButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const row = btn.closest('.cart-item-row');
+                const itemId = row.getAttribute('data-id');
+                const itemType = row.getAttribute('data-type');
+                const itemPrice = parseFloat(row.getAttribute('data-price'));
+                const qtyInput = row.querySelector('.qty-input');
+                const totalDisplay = row.querySelector('.item-total-price');
+                
+                const delta = parseInt(btn.getAttribute('data-delta'));
+                let currentQty = parseInt(qtyInput.value);
+                let newQty = currentQty + delta;
+                
+                if (newQty <= 0) {
+                    // Trigger form submit to remove
+                    row.querySelector('form').submit();
+                    return;
+                }
+                
+                // Disable temporarily
+                qtyInput.value = newQty;
+                
+                // Call AJAX update
+                const formData = new FormData();
+                formData.append('item_id', itemId);
+                formData.append('item_type', itemType);
+                formData.append('quantity', newQty);
+                
+                const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+                
+                fetch("{% url 'cart_update' %}", {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': csrfToken,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update UI
+                        totalDisplay.textContent = `${data.item_total.toFixed(2)} SAR`;
+                        document.getElementById('summary-subtotal').textContent = `${data.cart_total.toFixed(2)} SAR`;
+                        document.getElementById('summary-total').textContent = `${data.cart_total.toFixed(2)} SAR`;
+                    } else {
+                        // Revert
+                        qtyInput.value = currentQty;
+                        alert(data.message || 'Error updating cart.');
+                    }
+                })
+                .catch(err => {
+                    qtyInput.value = currentQty;
+                    alert('Connection error occurred.');
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,311 @@
+{% extends 'restaurant/base.html' %}
+{% load static %}
+
+{% block title %}Checkout | Calicut Star Riyadh{% endblock %}
+
+{% block extra_css %}
+<style>
+    .checkout-section {
+        padding: 140px 0 100px;
+        background-color: var(--light-neutral);
+        min-height: 80vh;
+    }
+    .checkout-card {
+        background-color: var(--white);
+        border-radius: var(--border-radius-md);
+        box-shadow: var(--shadow-soft);
+        border: 1px solid rgba(0,0,0,0.05);
+        padding: 40px;
+    }
+    .checkout-title {
+        color: var(--primary-green);
+        font-family: var(--font-heading);
+        font-weight: 700;
+        font-size: 1.8rem;
+        margin-bottom: 25px;
+        border-bottom: 2px solid rgba(11, 93, 59, 0.1);
+        padding-bottom: 15px;
+    }
+    
+    /* Order Summary details */
+    .summary-card {
+        background-color: var(--white);
+        border-radius: var(--border-radius-md);
+        box-shadow: var(--shadow-soft);
+        border: 1px solid rgba(0,0,0,0.05);
+        padding: 30px;
+        position: sticky;
+        top: 100px;
+    }
+    .summary-title {
+        color: var(--primary-green);
+        font-family: var(--font-heading);
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        border-bottom: 1.5px solid rgba(11, 93, 59, 0.15);
+        padding-bottom: 10px;
+    }
+    .summary-item-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        font-size: 0.95rem;
+    }
+    .summary-item-name {
+        font-weight: 600;
+        color: var(--dark-neutral);
+    }
+    .summary-item-qty {
+        color: var(--accent-gold);
+        font-weight: 700;
+    }
+    .summary-divider {
+        height: 1px;
+        background-color: rgba(0,0,0,0.08);
+        margin: 15px 0;
+    }
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        font-size: 0.95rem;
+    }
+    .summary-total {
+        display: flex;
+        justify-content: space-between;
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: var(--primary-green);
+        font-family: var(--font-heading);
+        border-top: 1.5px solid rgba(11, 93, 59, 0.15);
+        padding-top: 15px;
+        margin-top: 15px;
+    }
+    .payment-option-box {
+        background-color: var(--light-neutral);
+        border: 1px solid rgba(0,0,0,0.08);
+        border-radius: var(--border-radius-sm);
+        padding: 15px;
+        margin-bottom: 15px;
+        cursor: pointer;
+        transition: var(--transition-smooth);
+    }
+    .payment-option-box:hover {
+        border-color: var(--primary-green);
+        background-color: rgba(11, 93, 59, 0.02);
+    }
+    .payment-option-box.active {
+        border-color: var(--accent-gold);
+        background-color: rgba(212, 160, 23, 0.05);
+        border-width: 2px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="checkout-section">
+    <div class="container">
+        
+        <!-- Messages -->
+        {% if messages %}
+        <div class="row mb-4">
+            <div class="col-12">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="row g-5">
+            <!-- Form Block (Col 7) -->
+            <div class="col-lg-7" data-fade-in>
+                <div class="checkout-card">
+                    <h2 class="checkout-title"><i class="bi bi-person-fill-check me-2"></i>Checkout Details</h2>
+                    
+                    <form id="checkout-main-form" method="POST" action="{% url 'checkout' %}">
+                        {% csrf_token %}
+                        
+                        <div class="row g-3">
+                            <!-- Name -->
+                            <div class="col-md-6">
+                                <label for="name" class="form-label fw-semibold">Customer Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control py-2" id="name" name="name" required placeholder="Enter your full name">
+                            </div>
+                            
+                            <!-- Phone -->
+                            <div class="col-md-6">
+                                <label for="phone" class="form-label fw-semibold">Phone Number <span class="text-danger">*</span></label>
+                                <input type="tel" class="form-control py-2" id="phone" name="phone" required placeholder="e.g. 0501234567">
+                            </div>
+                            
+                            <!-- Service Type -->
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Service Type <span class="text-danger">*</span></label>
+                                <div class="d-flex justify-content-between p-3 rounded-2" style="background-color: var(--light-neutral); border: 1px solid rgba(0,0,0,0.05);">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="delivery_option" id="opt-dinein" value="Dine-In" checked>
+                                        <label class="form-check-label fw-semibold" for="opt-dinein" style="cursor: pointer;">Dine-In</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="delivery_option" id="opt-takeaway" value="Takeaway">
+                                        <label class="form-check-label fw-semibold" for="opt-takeaway" style="cursor: pointer;">Takeaway</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="delivery_option" id="opt-delivery" value="Delivery">
+                                        <label class="form-check-label fw-semibold" for="opt-delivery" style="cursor: pointer;">Home Delivery</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Address / Table Number -->
+                            <div class="col-12">
+                                <label for="address_or_table" id="loc-label" class="form-label fw-semibold">Table Number <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control py-2" id="address_or_table" name="address_or_table" required placeholder="e.g. Table 5">
+                            </div>
+                            
+                            <!-- Kitchen Notes -->
+                            <div class="col-12">
+                                <label for="notes" class="form-label fw-semibold">Notes for Kitchen (Optional)</label>
+                                <textarea class="form-control" id="notes" name="notes" placeholder="e.g. Make it extra spicy, no onions..."></textarea>
+                            </div>
+                            
+                            <!-- Payment Methods -->
+                            <div class="col-12 mt-4">
+                                <h4 class="fw-bold mb-3 text-green" style="color: var(--primary-green); font-family: var(--font-heading);">Select Payment Method</h4>
+                                
+                                <!-- Online -->
+                                <div class="payment-option-box active" onclick="selectPayment('Online', this)">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="payment_method" id="pay-online" value="Online" checked style="cursor: pointer;">
+                                        <label class="form-check-label fw-bold d-block" for="pay-online" style="cursor: pointer;">
+                                            <i class="bi bi-credit-card-2-front-fill me-2 text-warning"></i>Pay Online (Mada / Credit Card)
+                                            <small class="d-block text-muted fw-normal mt-1">Secure online authorization supporting Saudi Mada cards.</small>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <!-- Cash on Delivery -->
+                                <div class="payment-option-box" onclick="selectPayment('Cash on Delivery', this)">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="payment_method" id="pay-cash" value="Cash on Delivery" style="cursor: pointer;">
+                                        <label class="form-check-label fw-bold d-block" for="pay-cash" style="cursor: pointer;">
+                                            <i class="bi bi-cash-stack me-2 text-green" style="color: #28a745;"></i>Cash on Delivery / Cash at Counter
+                                            <small class="d-block text-muted fw-normal mt-1">Pay with cash when your food is delivered or picked up.</small>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <!-- Card at Counter -->
+                                <div class="payment-option-box" onclick="selectPayment('Card at Counter', this)">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="payment_method" id="pay-card-counter" value="Card at Counter" style="cursor: pointer;">
+                                        <label class="form-check-label fw-bold d-block" for="pay-card-counter" style="cursor: pointer;">
+                                            <i class="bi bi-device-ssd-fill me-2 text-secondary"></i>Card at Counter / Card on Delivery
+                                            <small class="d-block text-muted fw-normal mt-1">Our delivery agent will bring a POS machine, or pay at counter.</small>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Summary Sidebar (Col 5) -->
+            <div class="col-lg-5" data-fade-in>
+                <div class="summary-card">
+                    <h3 class="summary-title"><i class="bi bi-receipt-cutoff me-2 text-warning"></i>Order Summary</h3>
+                    
+                    <div class="summary-items-list">
+                        {% for item in cart %}
+                        <div class="summary-item-row">
+                            <span>
+                                <span class="summary-item-qty">{{ item.quantity }}x</span> 
+                                <span class="summary-item-name">{{ item.name }}</span>
+                            </span>
+                            <span class="fw-semibold">{{ item.total_price }} SAR</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="summary-divider"></div>
+                    
+                    <div class="summary-row">
+                        <span class="text-muted">Subtotal</span>
+                        <span class="fw-semibold">{{ cart.get_total_price }} SAR</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="text-muted">Delivery Charges</span>
+                        <span class="text-success fw-bold">FREE</span>
+                    </div>
+                    
+                    <div class="summary-total">
+                        <span>Total Payable</span>
+                        <span>{{ cart.get_total_price }} SAR</span>
+                    </div>
+                    
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="button" onclick="submitCheckoutForm()" class="btn btn-green py-3 text-uppercase fw-bold" style="font-size: 0.85rem; letter-spacing: 0.5px;">
+                            <i class="bi bi-bag-check-fill me-2"></i>Place Order Now
+                        </button>
+                        <a href="{% url 'cart_detail' %}" class="btn btn-outline-gold py-2">
+                            Return to Cart
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function selectPayment(val, element) {
+        // Toggle active class
+        document.querySelectorAll('.payment-option-box').forEach(box => {
+            box.classList.remove('active');
+        });
+        element.classList.add('active');
+        
+        // Check input
+        const radio = element.querySelector('input[type="radio"]');
+        if (radio) radio.checked = true;
+    }
+    
+    function submitCheckoutForm() {
+        document.getElementById('checkout-main-form').submit();
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        // Toggle location label based on service type
+        const serviceRadios = document.querySelectorAll('input[name="delivery_option"]');
+        const locLabel = document.getElementById('loc-label');
+        const locInput = document.getElementById('address_or_table');
+        
+        serviceRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                const service = radio.value;
+                if (service === 'Dine-In') {
+                    locLabel.innerHTML = 'Table Number <span class="text-danger">*</span>';
+                    locInput.placeholder = 'e.g. Table 5';
+                    locInput.required = true;
+                } else if (service === 'Takeaway') {
+                    locLabel.innerHTML = 'Pickup Note (Optional)';
+                    locInput.placeholder = 'e.g. In 15 minutes';
+                    locInput.required = false;
+                } else if (service === 'Delivery') {
+                    locLabel.innerHTML = 'Delivery Address <span class="text-danger">*</span>';
+                    locInput.placeholder = 'Enter building name, street address, Riyadh neighborhood';
+                    locInput.required = true;
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

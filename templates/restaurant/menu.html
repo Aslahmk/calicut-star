@@ -1,0 +1,158 @@
+{% extends 'restaurant/base.html' %}
+{% load static %}
+
+{% block title %}Full Menu Book | Calicut Star Riyadh{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Custom spacing and styles for Menu page */
+    .menu-header-section {
+        background: linear-gradient(135deg, rgba(11, 93, 59, 0.9) 0%, rgba(5, 48, 30, 0.95) 100%), url('{% static "images/menu_header_bg.png" %}');
+        background-size: cover;
+        background-position: center;
+        padding: 120px 0 60px;
+        color: var(--white);
+        text-align: center;
+    }
+    .menu-header-section h1 {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 10px;
+    }
+    .menu-header-section p {
+        font-size: 1.15rem;
+        color: var(--accent-gold);
+    }
+    .menu-nav-tabs {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 40px;
+    }
+    .menu-filter-btn {
+        background-color: var(--light-neutral);
+        color: var(--primary-green);
+        border: 1.5px solid rgba(11, 93, 59, 0.15);
+        border-radius: 50px;
+        padding: 10px 22px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        transition: var(--transition-smooth);
+    }
+    .menu-filter-btn:hover,
+    .menu-filter-btn.active {
+        background-color: var(--primary-green);
+        color: var(--white);
+        border-color: var(--primary-green);
+        box-shadow: 0 4px 10px rgba(11, 93, 59, 0.2);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Header Banner -->
+<section class="menu-header-section">
+    <div class="container">
+        <h1 data-fade-in>The Calicut Star Menu</h1>
+        <p data-fade-in>Explore the authentic taste of traditional Malabar recipes crafted with pure spices.</p>
+    </div>
+</section>
+
+<!-- Menu Contents Section -->
+<section class="section-padding">
+    <div class="container">
+        
+        <!-- Search bar -->
+        <div class="menu-search-bar" data-fade-in>
+            <input type="text" id="menu-search-input" class="form-control menu-search-input" placeholder="Search for biriyani, porotta, fish fry...">
+            <i class="bi bi-search menu-search-icon"></i>
+        </div>
+        
+        <!-- Category Filter Buttons -->
+        <div class="menu-nav-tabs" data-fade-in>
+            <button class="menu-filter-btn active" data-filter="all">All Items</button>
+            {% for category in categories %}
+                <button class="menu-filter-btn" data-filter="{{ category.slug }}">
+                    {% if category.icon %}
+                        <i class="bi {{ category.icon }} me-1"></i>
+                    {% endif %}
+                    {{ category.name }}
+                </button>
+            {% endfor %}
+        </div>
+        
+        <!-- Items Grid -->
+        <div class="row g-4" id="menu-items-grid" data-fade-in>
+            {% if menu_items %}
+                {% for item in menu_items %}
+                <div class="col-lg-3 col-md-6 menu-item-col">
+                    <div class="food-card" data-category="{{ item.category.slug }}">
+                        <div class="food-card-img-wrapper">
+                            {% if item.image %}
+                                <img src="{{ item.image.url }}" alt="{{ item.name }}">
+                            {% else %}
+                                <img src="{% static 'images/default_food.png' %}" alt="{{ item.name }}">
+                            {% endif %}
+                            
+                            <!-- Available/Unavailable badge -->
+                            {% if item.is_available %}
+                                <span class="food-card-badge badge-available">Available</span>
+                            {% else %}
+                                <span class="food-card-badge badge-unavailable">Sold Out</span>
+                            {% endif %}
+                            
+                            <!-- Veg/Spicy Indicators -->
+                            <div class="food-card-icons">
+                                {% if item.is_vegetarian %}
+                                    <span class="food-icon-indicator food-icon-veg" title="Vegetarian">
+                                        <i class="bi bi-circle-fill"></i>
+                                    </span>
+                                {% endif %}
+                                {% if item.is_spicy %}
+                                    <span class="food-icon-indicator food-icon-spicy" title="Spicy">
+                                        <i class="bi bi-fire"></i>
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="food-card-body">
+                            <h3 class="food-card-title mb-2">
+                                <span>{{ item.name }}</span>
+                            </h3>
+                            <p class="food-card-text">{{ item.description }}</p>
+                            
+                            <div class="food-card-footer">
+                                <span class="food-card-price">{{ item.price }} <small style="font-size: 0.75rem; font-family: var(--font-body);">SAR</small></span>
+                                {% if item.is_available %}
+                                <button type="button" class="whatsapp-order-btn add-to-cart-btn" data-item-id="{{ item.id }}" data-item-name="{{ item.name }}" data-item-price="{{ item.price }}" data-item-type="menu">
+                                    <i class="bi bi-cart-fill"></i> Add to Cart
+                                </button>
+                                {% else %}
+                                <button class="btn btn-secondary btn-sm" disabled>Sold Out</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 text-center py-5 text-muted">
+                    <i class="bi bi-journal-x" style="font-size: 3rem;"></i>
+                    <p class="mt-3">The menu book is currently being updated. Please check back shortly!</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- No results message -->
+        <div id="menu-no-results" class="text-center py-5 text-muted d-none">
+            <i class="bi bi-search" style="font-size: 3rem;"></i>
+            <h4 class="mt-3">No Dishes Found</h4>
+            <p>We couldn't find any menu items matching your search or filters. Try checking different keywords or categories.</p>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
